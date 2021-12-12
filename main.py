@@ -22,18 +22,15 @@ class Plot:
 		directory = 'HAR/'
 		for name in listdir(directory):
 			filename = directory + '/' + name
-			if not filename.endswith('.csv'):
-				continue
-			df = read_csv(filename, header=None)
-			# drop row number
-			values = df.values[:, 1:]
-			self.subjects.append(values)
+			if filename.endswith('.csv'):
+				df = read_csv(filename, header=None)
+				values = df.values[:, 1:]  # drop row number
+				self.subjects.append(values)
 		return self.subjects
 
 	def load_from_dat(self):
 		return self.subjects
 
-	# plot the x, y, z acceleration and activities for a single subject
 	# plot the x, y, z acceleration for each subject
 	def plot_subjects(self):
 		subjects = self.subjects
