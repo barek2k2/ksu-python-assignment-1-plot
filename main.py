@@ -34,17 +34,21 @@ class Plot:
 		return self.subjects
 
 	# plot the x, y, z acceleration and activities for a single subject
-	def plot_subject(self, subject):
-		print(subject)
+	# plot the x, y, z acceleration for each subject
+	def plot_subjects(self):
+		subjects = self.subjects
+		print(subjects)
 		pyplot.figure()
-		# create a plot for each column
-		for col in range(subject.shape[1]):
-			pyplot.subplot(subject.shape[1], 1, col+1)
-			pyplot.plot(subject[:, col])
+		# create a plot for each subject
+		for i in range(len(subjects)):
+			pyplot.subplot(len(subjects), 1, i + 1)
+			# plot each of x, y and z
+			for j in range(subjects[i].shape[1] - 1):
+				pyplot.plot(subjects[i][:, j])
 		pyplot.show()
 
 
 p = Plot(Plot.CSV)
 p.load_dataset()
-p.plot_subject(p.subjects[0])
+p.plot_subjects()
 
