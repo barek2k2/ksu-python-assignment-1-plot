@@ -29,7 +29,7 @@ class Plot:
 		return self.subjects
 
 	def load_from_dat(self):
-		return self.subjects
+		return self.subjects  # Not implemented yet but returning original subjects only.
 
 	# plot the x, y, z acceleration for each subject
 	def plot_subjects(self):
@@ -44,8 +44,24 @@ class Plot:
 				pyplot.plot(subjects[i][:, j])
 		pyplot.show()
 
+	# returns a list of dict, where each dict has one sequence per activity
+	def group_by_activity(self, activities):
+		grouped = [{a: s[s[:, -1] == a] for a in activities} for s in self.subjects]
+		return grouped
+
+	# calculate total duration in sec for each activity per subject and plot
+	def plot_durations(self, grouped, activities):
+		# calculate the lengths for each activity for each subject
+		freq = 52
+		durations = [[len(s[a]) / freq for s in grouped] for a in activities]
+		pyplot.boxplot(durations, labels=activities)
+		pyplot.show()
+
 
 p = Plot(Plot.CSV)
 p.load_dataset()
+activities = [i for i in range(0, 8)]
+grouped = p.group_by_activity(activities)
+p.plot_durations(grouped, activities)
 p.plot_subjects()
 
