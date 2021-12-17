@@ -1,6 +1,7 @@
 from os import listdir
 from pandas import read_csv
 from matplotlib import pyplot
+import numpy as np
 
 
 class Plot:
@@ -29,17 +30,29 @@ class Plot:
 		return self.subjects
 
 	def load_from_dat(self):
-		return self.subjects  # Not implemented yet but returning original subjects only.
+		directory = 'HAR_DAT/'
+		for name in listdir(directory):
+			filename = directory + '/' + name
+			if filename.endswith('.dat'):
+				dat_file = open(filename, "r")
+				lines = dat_file.read()
+				rows = lines.splitlines()
+				for row in rows:
+					columns = row.split(' ')
+					del(columns[0])
+					hl_activity = columns[243]  # print(columns[243]) # contains HL_Activity/class_activity
+					columns = columns[0:36]
+					columns = [0 if i == "NaN" else int(i) for i in columns]
+					values = np.array(columns).reshape(12, 3)
+					values = np.hstack((values, np.full((12, 1), hl_activity)))
+					self.subjects.append(values)
+		return self.subjects
 
-	# plot the x, y, z acceleration for each subject
 	def plot_subjects(self):
-		subjects = self.subjects
-		print(subjects)
+		subjects = self.subjects[0:30]
 		pyplot.figure()
-		# create a plot for each subject
 		for i in range(len(subjects)):
 			pyplot.subplot(len(subjects), 1, i + 1)
-			# plot each of x, y and z
 			for j in range(subjects[i].shape[1] - 1):
 				pyplot.plot(subjects[i][:, j])
 		pyplot.show()
@@ -58,10 +71,12 @@ class Plot:
 		pyplot.show()
 
 
-p = Plot(Plot.CSV)
+p = Plot(Plot.DAT)
 p.load_dataset()
 activities = [i for i in range(0, 8)]
 grouped = p.group_by_activity(activities)
-p.plot_durations(grouped, activities)
+print("Plotting has started...")
 p.plot_subjects()
-
+print(p.subjects)
+p.plot_durations(grouped, activities)
+print("Plotting has done!")
